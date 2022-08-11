@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import 'bootstrap/dist/css/bootstrap.min.css'
 import ColumnList, {ColumnProps} from "./components/ColumnList.vue";
+import GlobalHeader, {UserProps} from "./components/GlobalHeader.vue";
+const currentUser: UserProps = {
+  isLogin: false
+}
 const testData: ColumnProps[] = [
   {
     id: 1,
@@ -30,7 +34,8 @@ const testData: ColumnProps[] = [
 </script>
 
 <template>
-  <div class="container">
+  <div class="container-fluid p-xl-0 flex-shrink-0">
+    <GlobalHeader :user="currentUser"></GlobalHeader>
     <ColumnList :lists="testData"></ColumnList>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="login-page mx-auto p-3 w-330">
     <validate-form @validateForm="validateForm">
       <div class="mb-3">
         <label class="form-label">邮箱地址</label>
@@ -27,6 +27,7 @@
 import { defineComponent, ref } from 'vue'
 import ValidateInput, { RuleProps } from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: 'LoginPage',
@@ -45,8 +46,12 @@ export default defineComponent({
       { type: 'required', message: '密码不能为空' }
     ]
     // 验证表单
+    const router = useRouter()
     const validateForm = (result: boolean) => {
       console.log('result', result)
+      if (result) {
+        router.push({name: 'column', params: {id: 1}})
+      }
     }
     return {
       emailRules,

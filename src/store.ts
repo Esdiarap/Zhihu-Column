@@ -56,13 +56,14 @@ const store = createStore<GlobalDataProps>({
         posts: [],
         user: {isLogin: false},
         loading: false,
-        token: ''
+        token: localStorage.getItem('token') || ''
     },
     mutations: {
         login(state, rawData) {
             // state.user = {...state.user, isLogin: true, name: 'lzh'}
             const {token} = rawData.data
             state.token = token
+            localStorage.setItem('token', token)
             axios.defaults.headers.common.Authorization = `Bearer ${token}`
         },
         createPost(state, newPost) {
@@ -102,7 +103,7 @@ const store = createStore<GlobalDataProps>({
         },
         async loginAndFetchCurrentUser({dispatch}, loginData) {
             await dispatch('login', loginData)
-            return dispatch('fetchCurrentUser')
+            return await dispatch('fetchCurrentUser')
         }
     },
     getters: {

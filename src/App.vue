@@ -2,10 +2,28 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import ColumnList, {ColumnProps} from "./components/ColumnList.vue";
 import GlobalHeader, {UserProps} from "./components/GlobalHeader.vue";
+import ValidateInput, {RuleProps} from "./components/ValidateInput.vue";
+import {ref} from "vue";
+
+// Header相关 当前用户
 const currentUser: UserProps = {
   isLogin: true,
   name: 'lzh'
 }
+
+// Input相关
+const rules: RuleProps = [
+  {type: "required", message: '必须填写此项'},
+  {type: "email", message: '必须是正确的邮箱格式'}
+]
+const passwordRules: RuleProps = [
+  { type: 'required', message: '密码不能为空' },
+  { type: 'range', min: { message: '你的密码至少包括六位，不能含有空格', length: 6 }, message: '密码位数不对' }
+]
+
+const emailValue = ref('initial Email Value')
+
+// 测试数据
 const testData: ColumnProps[] = [
   {
     id: 1,
@@ -38,6 +56,18 @@ const testData: ColumnProps[] = [
   <div class="container-fluid p-xl-0 flex-shrink-0">
     <GlobalHeader :user="currentUser"></GlobalHeader>
     <ColumnList :lists="testData"></ColumnList>
+    <form action="#">
+      <div class="mb-3">
+        <label for="" class="form-label">输入邮箱信息</label>
+        <ValidateInput
+            :rules="rules"
+            v-model="emailValue"
+            placeholder="请输入邮箱信息"
+            type="text"
+        >
+        </ValidateInput>
+      </div>
+    </form>
   </div>
 </template>
 

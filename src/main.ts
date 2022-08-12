@@ -18,10 +18,12 @@ axios.interceptors.request.use(config => {
         // 普通的body对象，添加到data中
         config.data = {...config.data, icode: '591B1603875E6F76'}
     }
+    store.commit('setLoading', true)
     return config
 })
-axios.get('/columns').then(response => {
-    console.log(response.data)
+axios.interceptors.response.use(config => {
+    store.commit('setLoading', false)
+    return config
 })
 
 app.use(router)

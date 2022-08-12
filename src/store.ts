@@ -1,6 +1,6 @@
-import {createStore} from "vuex";
+import {Commit, createStore} from "vuex";
 import axios from "axios";
-interface UserProps {
+export interface UserProps {
     isLogin: boolean
     name?: string
     id?: string
@@ -33,13 +33,20 @@ export interface ImageProps {
 export interface GlobalDataProps {
     columns: ColumnProps[]
     posts: PostProps[]
-    user: UserProps
+    user: UserProps,
+    loading: false
+}
+
+const asyncAndAwait = async (url: string, mutationName: string, commit: Commit) => {
+    const { data } = await axios.get(url)
+    commit(mutationName, data)
 }
 const store = createStore<GlobalDataProps>({
     state: {
         columns: [],
         posts: [],
-        user: { isLogin: true, name: 'lzh', columnId: '5f3e86d62c56ee13bb830961' }
+        user: { isLogin: true, name: 'lzh', columnId: '5f3e86d62c56ee13bb830961' },
+        loading: false
     },
     mutations: {
         login(state) {
@@ -56,23 +63,20 @@ const store = createStore<GlobalDataProps>({
         },
         fetchPosts(state, rawData) {
             state.posts = rawData.data.list
+        },
+        setLoading(state, status) {
+            state.loading = status
         }
     },
     actions: {
-        fetchColumns(context) {
-            axios.get('/columns').then(response => {
-                context.commit('fetchColumns', response.data)
-            })
+        fetchColumns({ commit }) {
+            asyncAndAwait('/columns', 'fetchColumns', commit)
         },
-        fetchColumn(context, cid) {
-            axios.get(`/columns/${cid}`).then(response => {
-                context.commit('fetchColumn', response.data)
-            })
+        fetchColumn({ commit }, cid) {
+            asyncAndAwait(`/columns/${cid}`, 'fetchColumn', commit)
         },
-        fetchPosts(context, cid) {
-            axios.get(`/columns/${cid}/posts`).then(response => {
-                context.commit('fetchPosts', response.data)
-            })
+        fetchPosts({ commit }, cid) {
+            asyncAndAwait(`/columns/${cid}/posts`, 'fetchPosts', commit)
         },
     },
     getters:{

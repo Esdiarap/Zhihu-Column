@@ -32,7 +32,13 @@ export interface ImageProps {
     createdAt?: string
 }
 
+export interface GlobalErrorProps {
+    status: boolean,
+    message?: string
+}
+
 export interface GlobalDataProps {
+    error: GlobalErrorProps
     columns: ColumnProps[]
     posts: PostProps[]
     user: UserProps,
@@ -56,7 +62,8 @@ const store = createStore<GlobalDataProps>({
         posts: [],
         user: {isLogin: false},
         loading: false,
-        token: localStorage.getItem('token') || ''
+        token: localStorage.getItem('token') || '',
+        error: {status: false}
     },
     mutations: {
         login(state, rawData) {
@@ -81,9 +88,12 @@ const store = createStore<GlobalDataProps>({
         setLoading(state, status) {
             state.loading = status
         },
+        setError(state, e: GlobalErrorProps) {
+          state.error = e
+        },
         fetchCurrentUser(state, rawData) {
             state.user = {isLogin: true, ...rawData.data}
-        }
+        },
     },
     actions: {
         fetchColumns({commit}) {

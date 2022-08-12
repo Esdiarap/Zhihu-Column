@@ -32,18 +32,22 @@ const router = createRouter({
             meta: { requireLogin: true }
         }
     ],
-    scrollBehavior(to, from, savedPosition) {
-        return {
-            top: 0
-        }
-    }
+    // scrollBehavior(to, from, savedPosition) {
+    //     return {
+    //         top: 0
+    //     }
+    // }
 })
 router.beforeEach((to, from, next) => {
     if (to.meta.requireLogin && !store.state.user.isLogin) {
+        console.log('重定向到login')
         next({name: 'login'})
     }else if (to.meta.redirectAlreadyLogin && store.state.user.isLogin) {
+        console.log('重定向到首页')
         next('/')
     }else {
+        console.log('to.meta is ', to.meta)
+        console.log('isLogin', store.state.user.isLogin)
         next()
     }
 })

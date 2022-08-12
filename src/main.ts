@@ -24,6 +24,12 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(config => {
     store.commit('setLoading', false)
     return config
+}, e => {
+    // e.response.data --> code 422 error 错误信息
+    const {error} = e.response.data
+    store.commit('setError', {status: true, message: error})
+    store.commit('setLoading', false)
+    return Promise.reject(error)
 })
 
 app.use(router)

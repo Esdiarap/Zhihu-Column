@@ -68,6 +68,8 @@ export default defineComponent({
         store.dispatch('loginAndFetchCurrentUser', payload).then(res => {
           console.log(res)
           router.push('/')
+        }).catch(e => {
+          console.log(e)
         })
       }
     }

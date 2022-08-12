@@ -8,7 +8,7 @@
       </ul>
       <ul v-else class="list-inline mb-0">
         <!--<li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">你好 {{user.name}}</a></li>-->
-        <DropdownMenu :title="`${user.name}`">
+        <DropdownMenu :title="`${user.nickName}`">
           <DropdownItem><router-link to="/create" class="dropdown-item">新建文章</router-link></DropdownItem>
           <DropdownItem><a href="#" class="dropdown-item">编辑资料</a></DropdownItem>
           <DropdownItem><a href="#" class="dropdown-item">退出登录</a></DropdownItem>
@@ -22,12 +22,8 @@
 import {defineComponent, PropType} from "vue";
 import DropdownMenu from "./DropdownMenu.vue";
 import DropdownItem from "./DropdownItem.vue";
+import {UserProps} from "../store";
 
-export interface UserProps {
-  isLogin: boolean
-  name?: string
-  id?: number
-}
 
 export default defineComponent({
   name: "GlobalHeader",

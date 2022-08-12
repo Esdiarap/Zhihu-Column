@@ -24,12 +24,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import ValidateInput, { RuleProps } from '../components/ValidateInput.vue'
+import {defineComponent, ref} from 'vue'
+import ValidateInput, {RuleProps} from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {GlobalDataProps} from "../store";
+
+interface LoginPayload {
+  email: string,
+  password: string
+}
 
 export default defineComponent({
   name: 'LoginPage',
@@ -41,20 +46,29 @@ export default defineComponent({
     const emailVal = ref('')
     const store = useStore<GlobalDataProps>()
     const emailRules: RuleProps = [
-      { type: 'required', message: '电子邮箱地址不能为空' },
-      { type: 'email', message: '请输入正确的电子邮箱格式' }
+      {type: 'required', message: '电子邮箱地址不能为空'},
+      {type: 'email', message: '请输入正确的电子邮箱格式'}
     ]
     const passwordVal = ref('')
     const passwordRules: RuleProps = [
-      { type: 'required', message: '密码不能为空' }
+      {type: 'required', message: '密码不能为空'}
     ]
     // 验证表单
     const router = useRouter()
     const validateForm = (result: boolean) => {
-      console.log('result', result)
       if (result) {
-        router.push('/')
-        store.commit('login')
+        const payload: LoginPayload = {
+          email: emailVal.value,
+          password: passwordVal.value
+        }
+        // store.dispatch('login', payload).then(res => {
+        //   console.log(res)
+        //   router.push('/')
+        // })
+        store.dispatch('loginAndFetchCurrentUser', payload).then(res => {
+          console.log(res)
+          router.push('/')
+        })
       }
     }
     return {

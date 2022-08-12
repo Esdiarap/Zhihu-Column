@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import ColumnList, {ColumnProps} from "./components/ColumnList.vue";
 import GlobalHeader, {UserProps} from "./components/GlobalHeader.vue";
 import ValidateInput, {RuleProps} from "./components/ValidateInput.vue";
+import ValidateForm from "./components/ValidateForm.vue";
 import {ref} from "vue";
 
 // Header相关 当前用户
@@ -22,8 +23,12 @@ const passwordRules: RuleProps = [
 ]
 
 const emailValue = ref('initial Email Value')
+const validateForm = (boo: boolean) => {
+  console.log(`验证结果是${boo}`)
+}
 
-// 测试数据
+
+// 专栏相关
 const testData: ColumnProps[] = [
   {
     id: 1,
@@ -56,7 +61,7 @@ const testData: ColumnProps[] = [
   <div class="container-fluid p-xl-0 flex-shrink-0">
     <GlobalHeader :user="currentUser"></GlobalHeader>
     <ColumnList :lists="testData"></ColumnList>
-    <form action="#">
+    <ValidateForm action="#" @validateForm="validateForm">
       <div class="mb-3">
         <label for="" class="form-label">输入邮箱信息</label>
         <ValidateInput
@@ -67,7 +72,10 @@ const testData: ColumnProps[] = [
         >
         </ValidateInput>
       </div>
-    </form>
+      <!--<template #submit>-->
+      <!--  <button type="submit" class="btn-danger btn">自定义提交按钮</button>-->
+      <!--</template>-->
+    </ValidateForm>
   </div>
 </template>
 

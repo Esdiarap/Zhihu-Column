@@ -12,14 +12,16 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, reactive} from "vue"
+import {defineComponent, onMounted, PropType, reactive} from "vue"
 
+import {emitter} from "./ValidateForm.vue";
+
+// Props类型接口
 interface RuleProp {
   type: 'required' | 'email' | 'range'
   message: string
   min?: { message: string, length: number }
 }
-
 export type RuleProps = RuleProp[]
 
 export default defineComponent({
@@ -36,8 +38,8 @@ export default defineComponent({
       errorMessage: ''
     })
 
+    // 验证Input
     const emailRegExp = /^[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*$/
-
     const validateInput = () => {
       if (!props.rules) return true
       const isAllPassed = props.rules.every(rule => {
@@ -63,13 +65,27 @@ export default defineComponent({
       })
 
       inputRef.error = !isAllPassed
+      return isAllPassed
     }
 
+    // 更新Input
     const updateValue = (e: KeyboardEvent) => {
       const el = e.target as HTMLInputElement
       inputRef.val = el.value
       context.emit('update:modelValue', inputRef.val) // 触发update:modelValue自定义函数给父组件
     }
+
+    // 清空Input 这里只是简单的将val赋值为'', 如果是单选框那些要单独处理
+    const clearValue = () => {
+      inputRef.val = ''
+    }
+
+    // 创建组件的时候向父组件传递验证函数
+    onMounted(() => {
+      emitter.emit('form-item-create', validateInput)
+      emitter.emit('form-item-clear', clearValue)
+    })
+
     return {
       inputRef,
       validateInput,

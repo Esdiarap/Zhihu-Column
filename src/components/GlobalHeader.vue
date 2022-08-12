@@ -6,20 +6,31 @@
       <li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">注册</a></li>
     </ul>
     <ul v-else class="list-inline mb-0">
-      <li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">你好 {{user.name}}</a></li>
+      <!--<li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">你好 {{user.name}}</a></li>-->
+      <DropdownMenu :title="`${user.name}`">
+        <DropdownItem><a href="#" class="dropdown-item">新建文章</a></DropdownItem>
+        <DropdownItem><a href="#" class="dropdown-item">编辑资料</a></DropdownItem>
+        <DropdownItem><a href="#" class="dropdown-item">退出登录</a></DropdownItem>
+      </DropdownMenu>
     </ul>
   </nav>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
+import DropdownMenu from "./DropdownMenu.vue";
+import DropdownItem from "./DropdownItem.vue";
+
 export interface UserProps {
   isLogin: boolean
   name?: string
   id?: number
 }
+
 export default defineComponent({
   name: "GlobalHeader",
+  components: {DropdownMenu, DropdownItem},
+
   props: {
     user: {
       type: Object as PropType<UserProps>,

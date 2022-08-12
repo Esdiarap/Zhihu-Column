@@ -1,81 +1,21 @@
 <script lang="ts" setup>
 import 'bootstrap/dist/css/bootstrap.min.css'
-import ColumnList, {ColumnProps} from "./components/ColumnList.vue";
 import GlobalHeader, {UserProps} from "./components/GlobalHeader.vue";
-import ValidateInput, {RuleProps} from "./components/ValidateInput.vue";
-import ValidateForm from "./components/ValidateForm.vue";
-import {ref} from "vue";
+import HomePage from "./views/HomePage.vue";
+import LoginPage from "./views/LoginPage.vue";
 
-// Header相关 当前用户
 const currentUser: UserProps = {
   isLogin: true,
   name: 'lzh'
 }
 
-// Input相关
-const rules: RuleProps = [
-  {type: "required", message: '必须填写此项'},
-  {type: "email", message: '必须是正确的邮箱格式'}
-]
-const passwordRules: RuleProps = [
-  { type: 'required', message: '密码不能为空' },
-  { type: 'range', min: { message: '你的密码至少包括六位，不能含有空格', length: 6 }, message: '密码位数不对' }
-]
-
-const emailValue = ref('initial Email Value')
-const validateForm = (boo: boolean) => {
-  console.log(`验证结果是${boo}`)
-}
-
-
-// 专栏相关
-const testData: ColumnProps[] = [
-  {
-    id: 1,
-    title: 'test1的专栏',
-    description: '这是的test1专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  },
-  {
-    id: 2,
-    title: 'test2的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  },
-  {
-    id: 3,
-    title: 'test2的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  },
-  {
-    id: 4,
-    title: 'test2的专栏',
-    description: '这是的test2专栏，有一段非常有意思的简介，可以更新一下欧',
-    avatar: 'http://vue-maker.oss-cn-hangzhou.aliyuncs.com/vue-marker/5ee22dd58b3c4520912b9470.jpg?x-oss-process=image/resize,m_pad,h_100,w_100'
-  }
-]
 </script>
 
 <template>
   <div class="container-fluid p-xl-0 flex-shrink-0">
     <GlobalHeader :user="currentUser"></GlobalHeader>
-    <ColumnList :lists="testData"></ColumnList>
-    <ValidateForm action="#" @validateForm="validateForm">
-      <div class="mb-3">
-        <label for="" class="form-label">输入邮箱信息</label>
-        <ValidateInput
-            :rules="rules"
-            v-model="emailValue"
-            placeholder="请输入邮箱信息"
-            type="text"
-        >
-        </ValidateInput>
-      </div>
-      <!--<template #submit>-->
-      <!--  <button type="submit" class="btn-danger btn">自定义提交按钮</button>-->
-      <!--</template>-->
-    </ValidateForm>
+    <HomePage></HomePage>
+    <LoginPage></LoginPage>
   </div>
 </template>
 

@@ -1,6 +1,13 @@
 import {Commit, createStore} from "vuex";
 import axios from "axios";
 
+// Post请求的返回值
+export interface ResponseType<T = object> {
+    code: number
+    mas: string
+    data: T
+}
+
 export interface UserProps {
     isLogin: boolean
     nickName?: string

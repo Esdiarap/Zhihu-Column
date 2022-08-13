@@ -1,6 +1,9 @@
 <template>
   <div class="create-post-page">
-    <UploadFileInput action="/upload"></UploadFileInput>
+    <UploadFileInput action="/upload"
+                     :before-upload="beforeUpload"
+                     @file-uploaded="onFileUploaded"
+    ></UploadFileInput>
     <h4>新建文章</h4>
     <validate-form @validateForm="onFormSubmit">
       <div class="mb-3">
@@ -35,8 +38,9 @@ import {useStore} from 'vuex'
 import {useRouter} from 'vue-router'
 import ValidateInput, {RuleProps} from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
-import {GlobalDataProps, PostProps} from "../store";
+import {GlobalDataProps, ImageProps, PostProps, ResponseType} from "../store";
 import UploadFileInput from "../components/UploadFileInput.vue";
+import createMessageAlert from "../apis/createMessageAlert";
 
 
 export default defineComponent({
@@ -75,12 +79,25 @@ export default defineComponent({
         }
       }
     }
+
+    const beforeUpload = (file: File) => {
+      const isJPG = file.type === 'image/jpeg'
+      if (!isJPG) createMessageAlert('上传图片只能是 JPG 格式', 'error', 2000)
+      return isJPG
+    }
+
+    const onFileUploaded = (rawData: ResponseType<ImageProps>) => {
+      createMessageAlert(`上传图片的ID ${rawData.data._id}`, 'success', 2000)
+
+    }
     return {
       titleRules,
       titleVal,
       contentVal,
       contentRules,
-      onFormSubmit
+      onFormSubmit,
+      beforeUpload,
+      onFileUploaded
     }
   }
 })

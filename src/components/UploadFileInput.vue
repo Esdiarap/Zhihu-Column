@@ -16,10 +16,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from "vue"
+import {defineComponent, PropType, ref} from "vue"
 import axios from "axios";
 
 type UploadStatus = 'ready' | 'uploading' | 'success' | 'error'
+type CheckFunction = (file: File) => boolean
 
 export default defineComponent({
   name: "UploadFileInput",
@@ -27,8 +28,12 @@ export default defineComponent({
     action: {
       type: String,
       required: true
+    },
+    beforeUpload: {
+      type: Function as PropType<CheckFunction>
     }
   },
+  emits: ['file-uploaded', 'file-uploaded-error'],
   setup(props, context) {
     const fileInput = ref<null | HTMLInputElement>(null)
     const fileStatus = ref<UploadStatus>('ready')
@@ -40,8 +45,15 @@ export default defineComponent({
     const handleFileChange = (e: Event) => {
       const currentTarget = e.target as HTMLInputElement
       if (currentTarget.files) { // 文件存在
-        fileStatus.value = 'uploading'
         const files = Array.from(currentTarget.files)
+        // 在loading之前检查上传的文件是否符合用户需求
+        if (props.beforeUpload) {
+          const result = props.beforeUpload(files[0])
+          if (!result) return
+        }
+
+        // 上传
+        fileStatus.value = 'uploading'
         const formData = new FormData()
         formData.append('file', files[0])
 
@@ -51,10 +63,13 @@ export default defineComponent({
             'Content-type': 'multipart/form-data'
           }
         }).then(res => {
-          console.log(res.data)
           fileStatus.value = 'success'
+          // 成功之后发射自定义事件
+          context.emit('file-uploaded', res.data)
         }).catch(e => {
           fileStatus.value = 'error'
+          // 失败之后发射自定义事件
+          context.emit('file-uploaded-error', e)
         }).finally(() => {
           // fileStatus.value = 'ready'
           if (fileInput.value) { // 把输入文件的框清空

@@ -1,5 +1,6 @@
 <template>
   <div class="create-post-page">
+    <UploadFileInput action="/upload"></UploadFileInput>
     <h4>新建文章</h4>
     <validate-form @validateForm="onFormSubmit">
       <div class="mb-3">
@@ -35,13 +36,15 @@ import {useRouter} from 'vue-router'
 import ValidateInput, {RuleProps} from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import {GlobalDataProps, PostProps} from "../store";
+import UploadFileInput from "../components/UploadFileInput.vue";
 
 
 export default defineComponent({
   name: 'CreatePost',
   components: {
     ValidateInput,
-    ValidateForm
+    ValidateForm,
+    UploadFileInput
   },
   setup() {
     const titleVal = ref('')
@@ -54,6 +57,8 @@ export default defineComponent({
     const contentRules: RuleProps = [
       {type: 'required', message: '文章详情不能为空'}
     ]
+
+    // 验证
     const onFormSubmit = (result: boolean) => {
       if (result) {
         const {column} = store.state.user

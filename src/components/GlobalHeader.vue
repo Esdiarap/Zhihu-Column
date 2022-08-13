@@ -11,7 +11,7 @@
         <DropdownMenu :title="`${user.nickName}`">
           <DropdownItem><router-link to="/create" class="dropdown-item">新建文章</router-link></DropdownItem>
           <DropdownItem><a href="#" class="dropdown-item">编辑资料</a></DropdownItem>
-          <DropdownItem><a href="#" class="dropdown-item">退出登录</a></DropdownItem>
+          <DropdownItem><a href="#" class="dropdown-item" @click.prevent="logout">退出登录</a></DropdownItem>
         </DropdownMenu>
       </ul>
     </div>
@@ -23,6 +23,9 @@ import {defineComponent, PropType} from "vue";
 import DropdownMenu from "./DropdownMenu.vue";
 import DropdownItem from "./DropdownItem.vue";
 import {UserProps} from "../store";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
+import createMessageAlert from "../apis/createMessageAlert";
 
 
 export default defineComponent({
@@ -33,6 +36,19 @@ export default defineComponent({
     user: {
       type: Object as PropType<UserProps>,
       required: true
+    }
+  },
+  setup() {
+    const store = useStore()
+    const router = useRouter()
+    const logout = () => {
+      createMessageAlert('退出成功', 'success', 2000)
+      store.state.user.isLogin = false
+      localStorage.setItem('token', '')
+      router.push('/')
+    }
+    return {
+      logout
     }
   }
 })

@@ -8,9 +8,10 @@ const createMessageAlert = (message: string, type: MessageAlertType, timeout?: n
         message,
         type
     })
-    const mountedNode = useDOMCreate('message')
+    // const mountedNode = useDOMCreate('message')
+    const mountedNode = document.createElement('div')
+    document.body.append(mountedNode)
     render(messageAlertVnode, mountedNode)
-    // messageAlertComponent.mount(mountedNode)
     const destroy = () => {
         render(null, mountedNode)
         mountedNode.remove()

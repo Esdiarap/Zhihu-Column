@@ -3,10 +3,12 @@
     <UploadFileInput action="/upload"
                      :before-upload="beforeUpload"
                      @file-uploaded="onFileUploaded"
+                     :uploaded="uploadedData"
     >
       <template #default>
         <h2>点击上传头图</h2>
       </template>
+      <!--正在上传-->
       <template #uploading>
         <!--显示上传旋转图标-->
         <div class="spinner-container">
@@ -16,6 +18,7 @@
           <span>正在上传头图...</span>
         </div>
       </template>
+      <!--上传成功-->
       <template #uploaded="dataProps">
         <img :src="dataProps.uploadedData.data.url" alt="image" width="500">
       </template>
@@ -49,9 +52,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
+import {defineComponent, onMounted, ref} from 'vue'
 import {useStore} from 'vuex'
-import {useRouter} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import ValidateInput, {RuleProps} from '../components/ValidateInput.vue'
 import ValidateForm from '../components/ValidateForm.vue'
 import {GlobalDataProps, ImageProps, PostProps, ResponseType} from "../store";
@@ -69,6 +72,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const store = useStore<GlobalDataProps>()
 
     const titleVal = ref('')
@@ -117,6 +121,23 @@ export default defineComponent({
       createMessageAlert(`上传图片的ID ${rawData.data._id}`, 'success', 2000)
       if (rawData.data._id) imageID = rawData.data._id
     }
+
+    /////////////////////////////////
+    // 处理修改Post的情况
+    const isEditMode = !!route.query.id
+    const uploadedData = ref()
+    onMounted(() => {
+      if (isEditMode) {
+        store.dispatch('fetchPost', route.query.id).then((rawData: ResponseType<PostProps>) => {
+          const currentPost = rawData.data
+          if (currentPost.image) {
+            uploadedData.value = {data: currentPost.image}
+          }
+          titleVal.value = currentPost.title
+          contentVal.value = currentPost.content || ''
+        })
+      }
+    })
     return {
       titleRules,
       titleVal,
@@ -124,7 +145,8 @@ export default defineComponent({
       contentRules,
       onFormSubmit,
       beforeUpload,
-      onFileUploaded
+      onFileUploaded,
+      uploadedData
     }
   }
 })

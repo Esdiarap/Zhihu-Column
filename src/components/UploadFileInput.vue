@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, ref} from "vue"
+import {defineComponent, PropType, ref, watch} from "vue"
 import axios from "axios";
 
 type UploadStatus = 'ready' | 'uploading' | 'success' | 'error'
@@ -41,13 +41,17 @@ export default defineComponent({
     },
     beforeUpload: {
       type: Function as PropType<CheckFunction>
+    },
+    uploaded: {
+      type: Object
     }
   },
   inheritAttrs: false,
   emits: ['file-uploaded', 'file-uploaded-error'],
   setup(props, context) {
     const fileInput = ref<null | HTMLInputElement>(null)
-    const fileStatus = ref<UploadStatus>('ready')
+    // 如果传递过来的uploaded数据是存在的话，说明fileStatus已经是success状态
+    const fileStatus = ref<UploadStatus>(props.uploaded ? 'success' : 'ready')
     const uploadedData = ref()
     const upload = () => {
       if (fileInput.value) {
@@ -93,6 +97,15 @@ export default defineComponent({
 
       }
     }
+
+    // 处理CreatePost组件传递过来的uploaded数据
+    // 说明此时是更新状态
+    watch(() => props.uploaded, newValue => {
+      if (newValue) {
+        fileStatus.value = 'success'
+        uploadedData.value = newValue
+      }
+    })
     return {
       upload,
       fileInput,

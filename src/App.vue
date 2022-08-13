@@ -24,7 +24,7 @@ onMounted(() => {
 // 观察Error状态并动态创建MessageAlert组件
 watch(() => error.value.status, () => {
   if (error.value.status && error.value.message) {
-    createMessageAlert(error.value.message, 'error')
+    createMessageAlert(error.value.message, 'error', 2000)
   }
 })
 </script>

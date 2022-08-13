@@ -1,19 +1,26 @@
 import MessageAlert, {MessageAlertType} from "../components/MessageAlert.vue";
-import {createApp} from "vue";
+import {h, render} from "vue";
 import useDOMCreate from "../hooks/useDOMCreate";
 
-const createMessageAlert = (message: string, type: MessageAlertType, timeout = 2000) => {
-    const messageAlertComponent = createApp(MessageAlert, {
+const createMessageAlert = (message: string, type: MessageAlertType, timeout?: number) => {
+    const messageAlertVnode = h(MessageAlert, {
         // 接收到的props参数
         message,
         type
     })
     const mountedNode = useDOMCreate('message')
-    messageAlertComponent.mount(mountedNode)
-    setTimeout(() => {
-        messageAlertComponent.unmount()
+    render(messageAlertVnode, mountedNode)
+    // messageAlertComponent.mount(mountedNode)
+    const destroy = () => {
+        render(null, mountedNode)
         mountedNode.remove()
-    }, timeout)
+    }
+    if (timeout) {
+        setTimeout(() => {
+            destroy()
+        }, timeout)
+    }
+    return destroy
 }
 
 export default createMessageAlert

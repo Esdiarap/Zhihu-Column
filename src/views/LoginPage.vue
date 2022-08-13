@@ -67,7 +67,7 @@ export default defineComponent({
         //   router.push('/')
         // })
         store.dispatch('loginAndFetchCurrentUser', payload).then(_ => {
-          createMessageAlert('成功登录，2秒后跳转首页', 'success')
+          createMessageAlert('成功登录，2秒后跳转首页', 'success', 2000)
           setTimeout(() => {
             router.push('/')
           }, 2000)

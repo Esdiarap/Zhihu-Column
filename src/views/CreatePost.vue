@@ -57,6 +57,7 @@ import ValidateForm from '../components/ValidateForm.vue'
 import {GlobalDataProps, ImageProps, PostProps, ResponseType} from "../store";
 import UploadFileInput from "../components/UploadFileInput.vue";
 import createMessageAlert from "../apis/createMessageAlert";
+import uploadCheck from "../apis/uploadCheck";
 
 
 export default defineComponent({
@@ -96,10 +97,12 @@ export default defineComponent({
       }
     }
 
+
     const beforeUpload = (file: File) => {
-      const isJPG = file.type === 'image/jpeg'
-      if (!isJPG) createMessageAlert('上传图片只能是 JPG 格式', 'error', 2000)
-      return isJPG
+      const result = uploadCheck(file, {format: ['image/jpeg', 'image/png'], size: 1})
+      if (result.error === 'format') createMessageAlert('格式错误，只能是jpg和png', 'error', 2000)
+      if (result.error === 'size') createMessageAlert('不能超过1MB', 'error', 2000)
+      return result.passed
     }
 
     const onFileUploaded = (rawData: ResponseType<ImageProps>) => {

@@ -32,7 +32,7 @@ export interface PostProps {
     image?: ImageProps | string;
     createdAt?: string;
     column: string;
-    author?: string
+    author?: string | UserProps
     isHTML?: boolean
 }
 
@@ -104,7 +104,7 @@ const store = createStore<GlobalDataProps>({
             state.posts = rawData.data.list
         },
         fetchPost(state, rawData) {
-            state.posts = [rawData.data] // 此时只有一个Post了，posts数组只有一项，但是也要用数组包裹起来
+            state.posts = [rawData.data] // 此时只有一个Post了，posts数组只有一项，但是也要用数组包裹起来。而且此处获取的Post是有Content的
         },
         setLoading(state, status) {
             state.loading = status

@@ -13,6 +13,10 @@
       <span class="create-time">{{post?.createdAt}}</span>
     </div>
     <div class="content" v-if="currentHTML" v-html="currentHTML"></div>
+    <div class="bottom-button" v-if="showEditArea">
+      <router-link :to="{name: 'create', query: {id: post._id}}" class="btn btn-primary">编辑</router-link>
+      <router-link :to="{name: 'create'}" class="btn btn-danger">删除</router-link>
+    </div>
   </div>
 </template>
 
@@ -20,7 +24,7 @@
 import {computed, defineComponent, onMounted, ref} from "vue"
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
-import {PostProps} from "../store";
+import {PostProps, UserProps} from "../store";
 import MarkdownIt from 'markdown-it'
 
 export default defineComponent({
@@ -42,9 +46,19 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('fetchPost', postId)
     })
+
+    const showEditArea = computed(() => {
+      const {isLogin, _id} = store.state.user
+      if (post.value && post.value.author && isLogin) {
+        const postAuthor = post.value.author as UserProps
+        return postAuthor._id === _id
+      }
+      return false
+    })
     return {
       post,
-      currentHTML
+      currentHTML,
+      showEditArea
     }
   }
 })
@@ -100,5 +114,10 @@ p {
 
 .description {
   color: rgb(126, 119, 119);
+}
+
+.bottom-button {
+  display: flex;
+  gap: 1rem;
 }
 </style>

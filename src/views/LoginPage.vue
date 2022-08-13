@@ -30,6 +30,7 @@ import ValidateForm from '../components/ValidateForm.vue'
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {GlobalDataProps} from "../store";
+import createMessageAlert from "../apis/createMessageAlert";
 
 interface LoginPayload {
   email: string,
@@ -65,9 +66,11 @@ export default defineComponent({
         //   console.log(res)
         //   router.push('/')
         // })
-        store.dispatch('loginAndFetchCurrentUser', payload).then(res => {
-          console.log(res)
-          router.push('/')
+        store.dispatch('loginAndFetchCurrentUser', payload).then(_ => {
+          createMessageAlert('成功登录，2秒后跳转首页', 'success')
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
         }).catch(e => {
           console.log(e)
         })

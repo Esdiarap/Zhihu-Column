@@ -13,6 +13,7 @@
 
 <script lang="ts">
 import {defineComponent, onUnmounted} from "vue"
+import useDOMCreate from "../hooks/useDOMCreate";
 
 export default defineComponent({
   name: "LoaderMask",
@@ -25,12 +26,7 @@ export default defineComponent({
     }
   },
   setup() {
-    const div = document.createElement('div')
-    div.id = 'back'
-    document.body.append(div)
-    onUnmounted(() => {
-      div.remove()
-    })
+    useDOMCreate('back')
   }
 })
 </script>

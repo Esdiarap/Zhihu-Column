@@ -32,11 +32,11 @@ const router = createRouter({
             meta: { requireLogin: true }
         }
     ],
-    // scrollBehavior(to, from, savedPosition) {
-    //     return {
-    //         top: 0
-    //     }
-    // }
+    scrollBehavior(to, from, savedPosition) {
+        return {
+            top: 0
+        }
+    }
 })
 router.beforeEach((to, from, next) => {
     if (to.meta.requireLogin && !store.state.user.isLogin) {

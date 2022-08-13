@@ -68,9 +68,10 @@ export default defineComponent({
     UploadFileInput
   },
   setup() {
-    const titleVal = ref('')
     const router = useRouter()
     const store = useStore<GlobalDataProps>()
+
+    const titleVal = ref('')
     const titleRules: RuleProps = [
       {type: 'required', message: '文章标题不能为空'}
     ]
@@ -78,21 +79,28 @@ export default defineComponent({
     const contentRules: RuleProps = [
       {type: 'required', message: '文章详情不能为空'}
     ]
+    let imageID: string
 
     // 验证
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        const {column} = store.state.user
+        const {column, _id} = store.state.user
         if (column) {
           const newPost: PostProps = {
-            _id: new Date().getTime().toString(),
             title: titleVal.value,
             content: contentVal.value,
-            createdAt: new Date().toLocaleString(),
-            column: column.toString()
+            column,
+            author: _id
           }
-          store.commit('createPost', newPost)
-          router.push({name: 'column', params: {id: column}})
+          if (imageID) {
+            newPost.image = imageID
+          }
+          store.dispatch('createPost', newPost).then(() => {
+            createMessageAlert('发表成功, 2秒后跳转到专栏', 'success', 2000)
+            setTimeout(() => {
+              router.push({name: 'column', params: {id: column}})
+            }, 2000)
+          })
         }
       }
     }
@@ -107,7 +115,7 @@ export default defineComponent({
 
     const onFileUploaded = (rawData: ResponseType<ImageProps>) => {
       createMessageAlert(`上传图片的ID ${rawData.data._id}`, 'success', 2000)
-
+      if (rawData.data._id) imageID = rawData.data._id
     }
     return {
       titleRules,

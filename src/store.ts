@@ -25,13 +25,14 @@ export interface ColumnProps {
 }
 
 export interface PostProps {
-    _id: string;
+    _id?: string;
     title: string;
     excerpt?: string
     content?: string;
-    image?: ImageProps;
-    createdAt: string;
+    image?: ImageProps | string;
+    createdAt?: string;
     column: string;
+    author?: string
 }
 
 export interface ImageProps {
@@ -130,6 +131,9 @@ const store = createStore<GlobalDataProps>({
         async loginAndFetchCurrentUser({dispatch}, loginData) {
             await dispatch('login', loginData)
             return await dispatch('fetchCurrentUser')
+        },
+        createPost({commit}, payload) {
+            return postAndCommit('/posts', 'createPost', commit, payload)
         }
     },
     getters: {

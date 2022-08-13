@@ -2,7 +2,7 @@
   <div class="post-list">
     <article v-for="post in list" :key="post._id" class="card mb-3 shadow-sm">
       <div class="card-body">
-        <h4>{{ post.title }}</h4>
+        <h4 @click.prevent="routeToPostDetail(post._id)" class="link-primary link">{{ post.title }}</h4>
         <div class="row my-3 align-items-center">
           <div v-if="post.image?.url" class="col-3">
             <img :src="post.image?.url" :alt="post.title" class="rounded-lg w-100">
@@ -18,6 +18,8 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import {PostProps} from '../store'
+import axios from "axios";
+import router from "../router";
 
 export default defineComponent({
   props: {
@@ -25,6 +27,25 @@ export default defineComponent({
       required: true,
       type: Array as PropType<PostProps[]>
     }
+  },
+  setup() {
+    const routeToPostDetail = (_id: string) => {
+      // console.log(_id)
+      // axios.get(`posts/${_id}`).then(res => {
+      //   console.log(res.data)
+      // })
+      router.push(`/posts/${_id}`)
+    }
+    return {
+      routeToPostDetail
+    }
   }
 })
 </script>
+
+<style scoped lang="scss">
+.link {
+  text-decoration: underline;
+  letter-spacing: 2px;
+}
+</style>

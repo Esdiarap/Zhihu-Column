@@ -33,6 +33,7 @@ export interface PostProps {
     createdAt?: string;
     column: string;
     author?: string
+    isHTML?: boolean
 }
 
 export interface ImageProps {
@@ -102,6 +103,9 @@ const store = createStore<GlobalDataProps>({
         fetchPosts(state, rawData) {
             state.posts = rawData.data.list
         },
+        fetchPost(state, rawData) {
+            state.posts = [rawData.data] // 此时只有一个Post了，posts数组只有一项，但是也要用数组包裹起来
+        },
         setLoading(state, status) {
             state.loading = status
         },
@@ -122,6 +126,9 @@ const store = createStore<GlobalDataProps>({
         fetchPosts({commit}, cid) {
             return  getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
         },
+        fetchPost({commit}, pid) {
+            return getAndCommit(`/posts/${pid}`, 'fetchPost', commit)
+        },
         login({commit}, payload) {
             return postAndCommit('/user/login', 'login', commit, payload)
         },
@@ -141,7 +148,8 @@ const store = createStore<GlobalDataProps>({
             return state.columns.length
         },
         getColumnById: state => (id: string) => state.columns.find(col => col._id === id),
-        getPostsById: state => (cid: string) => state.posts.filter(post => post.column === cid)
+        getPostsById: state => (cid: string) => state.posts.filter(post => post.column === cid),
+        getPostById: state => (pid: string) => state.posts.find(post => post._id === pid)
     }
 })
 

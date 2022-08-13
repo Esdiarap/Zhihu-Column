@@ -6,6 +6,7 @@ import CreatePost from "./views/CreatePost.vue";
 import store from "./store";
 import SignUpPage from "./views/SignUpPage.vue";
 import axios from "axios";
+import PostDetail from "./views/PostDetail.vue";
 
 const routerHistory = createWebHistory()
 const router = createRouter({
@@ -38,6 +39,11 @@ const router = createRouter({
             name: 'create',
             component: CreatePost,
             meta: {requireLogin: true}
+        },
+        {
+            path: '/posts/:id',
+            name: 'posts',
+            component: PostDetail
         }
     ],
     scrollBehavior(to, from, savedPosition) {

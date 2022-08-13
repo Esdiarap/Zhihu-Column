@@ -28,10 +28,12 @@ import {emitter} from "./ValidateForm.vue";
 
 // Props类型接口
 interface RuleProp {
-  type: 'required' | 'email' | 'range'
+  type: 'required' | 'email' | 'range' | 'custom'
   message: string
-  min?: { message: string, length: number }
+  min?: { message: string, length: number },
+  validator?: () => boolean
 }
+
 export type RuleProps = RuleProp[]
 export type TagType = 'input' | 'textarea'
 
@@ -72,6 +74,9 @@ export default defineComponent({
               pass = !inputRef.val.includes(' ') && inputRef.val.trim().length > rule.min.length
               inputRef.errorMessage = rule.min.message
             }
+            break
+          case "custom":
+            pass = rule.validator ? rule.validator() : true
             break
           default:
             break

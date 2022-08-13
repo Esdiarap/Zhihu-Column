@@ -3,13 +3,17 @@
     <UploadFileInput action="/upload"
                      :before-upload="beforeUpload"
                      @file-uploaded="onFileUploaded"
-                     class="upload-container"
     >
-      <h2>点击上传</h2>
+      <template #default>
+        <h2>点击上传头图</h2>
+      </template>
       <template #uploading>
         <!--显示上传旋转图标-->
-        <div class="spinner-border" role="status">
-          <span class="sr-only"></span>
+        <div class="spinner-container">
+          <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+          </div>
+          <span>正在上传头图...</span>
         </div>
       </template>
       <template #uploaded="dataProps">
@@ -121,12 +125,14 @@ export default defineComponent({
   flex-direction: column;
   gap: 2rem;
   align-items: center;
+
   & > * {
     width: 75%;
   }
 }
-.upload-container {
-  padding: 3rem;
-  text-align: center;
+
+.spinner-container {
+  display: flex;
+  gap: 2rem;
 }
 </style>

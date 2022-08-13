@@ -1,7 +1,8 @@
 <template>
   <div class="file-upload">
-    <div class="file-upload-container" @click.prevent="upload">
-      <slot v-if="fileStatus === 'uploading'" name="uploading">
+    <div class="file-upload-container" @click.prevent="upload" v-bind="$attrs"
+         :class="{bgtransparent: fileStatus === 'success'}">
+      <slot v-if="fileStatus === 'uploading'" name="uploading" class="uploadStyle">
         <button class="btn btn-primary">正在上传...</button>
       </slot>
       <!--具名插槽+作用域插槽, 向父级暴露成功的信息-->
@@ -11,7 +12,7 @@
       <!--<slot v-else-if="fileStatus === 'error'" name="error">-->
       <!--  <button class="btn btn-danger">上传失败</button>-->
       <!--</slot>-->
-      <slot v-else name="default">
+      <slot v-else name="default" class="uploadStyle">
         <button class="btn btn-primary">点击上传</button>
       </slot>
     </div>
@@ -42,6 +43,7 @@ export default defineComponent({
       type: Function as PropType<CheckFunction>
     }
   },
+  inheritAttrs: false,
   emits: ['file-uploaded', 'file-uploaded-error'],
   setup(props, context) {
     const fileInput = ref<null | HTMLInputElement>(null)
@@ -103,5 +105,31 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.file-upload-container {
+  box-sizing: border-box;
+  background-color: #6c757d;
+  min-height: 200px;
+  width: 100%;
 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  color: #f9f9f9;
+}
+
+.uploadStyle {
+  padding: 3rem;
+}
+
+.bgtransparent {
+  background: transparent;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 </style>

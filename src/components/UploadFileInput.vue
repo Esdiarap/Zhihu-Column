@@ -1,11 +1,20 @@
 <template>
   <div class="file-upload">
-    <button class="btn btn-primary" @click.prevent="upload">
-      <span v-if="fileStatus === 'uploading'">正在上传...</span>
-      <span v-else-if="fileStatus === 'success'">上传成功</span>
-      <span v-else-if="fileStatus === 'error'">上传失败</span>
-      <span v-else>点击上传</span>
-    </button>
+    <div class="file-upload-container" @click.prevent="upload">
+      <slot v-if="fileStatus === 'uploading'" name="uploading">
+        <button class="btn btn-primary">正在上传...</button>
+      </slot>
+      <!--具名插槽+作用域插槽, 向父级暴露成功的信息-->
+      <slot v-else-if="fileStatus === 'success'" name="uploaded" :uploadedData="uploadedData">
+        <button class="btn btn-primary">上传成功</button>
+      </slot>
+      <!--<slot v-else-if="fileStatus === 'error'" name="error">-->
+      <!--  <button class="btn btn-danger">上传失败</button>-->
+      <!--</slot>-->
+      <slot v-else name="default">
+        <button class="btn btn-primary">点击上传</button>
+      </slot>
+    </div>
     <input
         type="file"
         class="file-input d-none"
@@ -37,6 +46,7 @@ export default defineComponent({
   setup(props, context) {
     const fileInput = ref<null | HTMLInputElement>(null)
     const fileStatus = ref<UploadStatus>('ready')
+    const uploadedData = ref()
     const upload = () => {
       if (fileInput.value) {
         fileInput.value.click()
@@ -66,6 +76,8 @@ export default defineComponent({
           fileStatus.value = 'success'
           // 成功之后发射自定义事件
           context.emit('file-uploaded', res.data)
+          // 并且把数据暴露给作用域插槽，向父级传递
+          uploadedData.value = res.data
         }).catch(e => {
           fileStatus.value = 'error'
           // 失败之后发射自定义事件
@@ -83,7 +95,8 @@ export default defineComponent({
       upload,
       fileInput,
       fileStatus,
-      handleFileChange
+      handleFileChange,
+      uploadedData
     }
   }
 })

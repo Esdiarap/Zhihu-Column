@@ -3,7 +3,19 @@
     <UploadFileInput action="/upload"
                      :before-upload="beforeUpload"
                      @file-uploaded="onFileUploaded"
-    ></UploadFileInput>
+                     class="upload-container"
+    >
+      <h2>点击上传</h2>
+      <template #uploading>
+        <!--显示上传旋转图标-->
+        <div class="spinner-border" role="status">
+          <span class="sr-only"></span>
+        </div>
+      </template>
+      <template #uploaded="dataProps">
+        <img :src="dataProps.uploadedData.data.url" alt="image" width="500">
+      </template>
+    </UploadFileInput>
     <h4>新建文章</h4>
     <validate-form @validateForm="onFormSubmit">
       <div class="mb-3">
@@ -102,3 +114,19 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped lang="scss">
+.create-post-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  & > * {
+    width: 75%;
+  }
+}
+.upload-container {
+  padding: 3rem;
+  text-align: center;
+}
+</style>

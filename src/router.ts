@@ -68,8 +68,8 @@ router.beforeEach((to, from, next) => {
                     }
                 })
                 .catch(e => {
-                    console.log(e)
-                    localStorage.removeItem('token') // token已经不好用了
+                    console.error(e)
+                    store.commit('logout')
                     next('/login')
                 })
         }else {

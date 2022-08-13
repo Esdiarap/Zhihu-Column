@@ -24,7 +24,6 @@ import DropdownMenu from "./DropdownMenu.vue";
 import DropdownItem from "./DropdownItem.vue";
 import {UserProps} from "../store";
 import {useStore} from "vuex";
-import {useRouter} from "vue-router";
 import createMessageAlert from "../apis/createMessageAlert";
 
 
@@ -40,12 +39,9 @@ export default defineComponent({
   },
   setup() {
     const store = useStore()
-    const router = useRouter()
     const logout = () => {
       createMessageAlert('退出成功', 'success', 2000)
-      store.state.user.isLogin = false
-      localStorage.setItem('token', '')
-      router.push('/')
+      store.commit('logout')
     }
     return {
       logout

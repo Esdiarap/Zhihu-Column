@@ -1,5 +1,6 @@
 import {Commit, createStore} from "vuex";
 import axios from "axios";
+import router from "./router";
 
 // Post请求的返回值
 export interface ResponseType<T = object> {
@@ -80,6 +81,13 @@ const store = createStore<GlobalDataProps>({
             state.token = token
             localStorage.setItem('token', token)
             axios.defaults.headers.common.Authorization = `Bearer ${token}`
+        },
+        logout(state) {
+            state.token = ''
+            state.user.isLogin = false
+            localStorage.removeItem('token')
+            delete axios.defaults.headers.common.Authorization
+            router.push('/')
         },
         createPost(state, newPost) {
             state.posts.push(newPost)

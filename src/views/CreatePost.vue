@@ -28,7 +28,8 @@
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
         <validate-input
-            :rules="titleRules" v-model="titleVal"
+            :rules="titleRules"
+            v-model="titleVal"
             placeholder="请输入文章标题"
             type="text"
         />

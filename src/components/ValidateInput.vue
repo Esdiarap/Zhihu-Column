@@ -2,8 +2,7 @@
   <div class="validate-input-container pb-3">
     <input class="form-control"
            @blur="validateInput"
-           :value="inputRef.val"
-           @input="updateValue"
+           v-model="inputRef.val"
            :class="{'is-invalid': inputRef.error}"
            v-bind="$attrs"
            v-if="tag !== 'textarea'"
@@ -12,9 +11,8 @@
               v-else
               class="form-control"
               :class="{'is-invalid': inputRef.error}"
-              :value="inputRef.val"
+              v-model="inputRef.val"
               @blur="validateInput"
-              @input="updateValue"
               v-bind="$attrs"
     ></textarea>
     <span class="invalid-feedback" v-if="inputRef.error">{{ inputRef.errorMessage }}</span>
@@ -22,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, PropType, reactive} from "vue"
+import {computed, defineComponent, onMounted, PropType, reactive} from "vue"
 
 import {emitter} from "./ValidateForm.vue";
 
@@ -50,7 +48,12 @@ export default defineComponent({
 
   setup(props, context) {
     const inputRef = reactive({
-      val: props.modelValue || '', // 先提取props中的modelValue默认值
+      val: computed({ // 使用计算属性来解决问题
+        get: () => props.modelValue || '',
+        set: newValue => {
+          context.emit('update:modelValue', newValue)
+        }
+      }),
       error: false,
       errorMessage: ''
     })
@@ -88,13 +91,6 @@ export default defineComponent({
       return isAllPassed
     }
 
-    // 更新Input
-    const updateValue = (e: KeyboardEvent) => {
-      const el = e.target as HTMLInputElement
-      inputRef.val = el.value
-      context.emit('update:modelValue', inputRef.val) // 触发update:modelValue自定义函数给父组件
-    }
-
     // 清空Input 这里只是简单的将val赋值为'', 如果是单选框那些要单独处理
     const clearValue = () => {
       inputRef.val = ''
@@ -103,13 +99,12 @@ export default defineComponent({
     // 创建组件的时候向父组件传递验证函数
     onMounted(() => {
       emitter.emit('form-item-create', validateInput)
-      emitter.emit('form-item-clear', clearValue)
+      // emitter.emit('form-item-clear', clearValue)
     })
 
     return {
       inputRef,
       validateInput,
-      updateValue
     }
   }
 })

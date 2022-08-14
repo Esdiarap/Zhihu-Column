@@ -4,7 +4,8 @@
       <div class="mb-3">
         <label class="form-label">邮箱地址</label>
         <validate-input
-            :rules="emailRules" v-model="emailVal"
+            :rules="emailRules"
+            v-model="emailVal"
             placeholder="请输入邮箱地址"
             type="text"
             ref="inputRef"

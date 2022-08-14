@@ -36,14 +36,15 @@
       </div>
       <div class="mb-3">
         <label class="form-label">文章详情：</label>
-        <validate-input
-            rows="10"
-            type="text"
-            tag="textarea"
-            placeholder="请输入文章详情"
-            :rules="contentRules"
-            v-model="contentVal"
-        />
+        <MarkdownEditor v-model="contentVal"></MarkdownEditor>
+        <!--<validate-input-->
+        <!--    rows="10"-->
+        <!--    type="text"-->
+        <!--    tag="textarea"-->
+        <!--    placeholder="请输入文章详情"-->
+        <!--    :rules="contentRules"-->
+        <!--    v-model="contentVal"-->
+        <!--/>-->
       </div>
       <template #submit>
         <button class="btn btn-primary btn-large">{{isEditMode ? '更新文章' : '发表文章'}}</button>
@@ -62,6 +63,7 @@ import {GlobalDataProps, ImageProps, PostProps, ResponseType} from "../store";
 import UploadFileInput from "../components/UploadFileInput.vue";
 import createMessageAlert from "../apis/createMessageAlert";
 import uploadCheck from "../apis/uploadCheck";
+import MarkdownEditor from '../components/MarkdownEditor.vue'
 
 
 export default defineComponent({
@@ -69,7 +71,8 @@ export default defineComponent({
   components: {
     ValidateInput,
     ValidateForm,
-    UploadFileInput
+    UploadFileInput,
+    MarkdownEditor
   },
   setup() {
     const router = useRouter()

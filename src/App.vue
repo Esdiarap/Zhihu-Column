@@ -7,7 +7,7 @@ import {GlobalDataProps} from "./store";
 import {computed, watch} from "vue";
 import LoaderMask from "./components/LoaderMask.vue";
 import createMessageAlert from "./apis/createMessageAlert";
-
+import 'easymde/dist/easymde.min.css'
 
 const store = useStore<GlobalDataProps>()
 const currentUser = computed(() => store.state.user)

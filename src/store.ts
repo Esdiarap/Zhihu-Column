@@ -123,7 +123,7 @@ const store = createStore<GlobalDataProps>({
             state.columns.data[rawData.data._id] = rawData.data
         },
         fetchPosts(state, {data: rawData, extraData: columnId}) {
-            state.posts.data = {...state.posts.data, ...arrToObj(rawData.data.list)}
+            state.posts.data = {...state.posts.data, ...arrToObj(rawData.data.list)} // 把新的posts数据push到里面
             state.posts.loadedColumns.push(columnId)
         },
         fetchPost(state, rawData) {
@@ -161,8 +161,15 @@ const store = createStore<GlobalDataProps>({
                 return asyncAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit, {method: 'get'}, cid) // 把columnId带上
             }
         },
-        fetchPost({commit}, pid) {
-            return getAndCommit(`/posts/${pid}`, 'fetchPost', commit)
+        fetchPost({state, commit}, pid) {
+            const currentPost = state.posts.data[pid]
+            if (!currentPost || !currentPost.content) { // 当前的post都不存在，或者是通过点击post详情获取的post，而非在ColumnDetail界面获取的粗糙版的post
+                return getAndCommit(`/posts/${pid}`, 'fetchPost', commit)
+            }
+            // 如果post已经存在了，那就返回一个Promise.resolve带着当前数据回去，不然在编辑Post的时候，它是通过
+            // fetchPost获取当前Post的数据的，不返回就会报错
+            return Promise.resolve({data: currentPost})
+
         },
         login({commit}, payload) {
             return postAndCommit('/user/login', 'login', commit, payload)

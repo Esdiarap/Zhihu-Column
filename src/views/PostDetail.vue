@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref} from "vue"
+import {computed, defineComponent, onMounted} from "vue"
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import {PostProps, UserProps} from "../store";

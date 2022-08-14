@@ -23,7 +23,7 @@
         <img :src="dataProps.uploadedData.data.url" alt="image" width="500">
       </template>
     </UploadFileInput>
-    <h4>新建文章</h4>
+    <h4>{{isEditMode ? '更新文章' : '新建文章'}}</h4>
     <validate-form @validateForm="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -46,7 +46,7 @@
         />
       </div>
       <template #submit>
-        <button class="btn btn-primary btn-large">创建</button>
+        <button class="btn btn-primary btn-large">{{isEditMode ? '更新文章' : '发表文章'}}</button>
       </template>
     </validate-form>
   </div>
@@ -100,8 +100,11 @@ export default defineComponent({
           if (imageID) {
             newPost.image = imageID
           }
-          store.dispatch('createPost', newPost).then(() => {
-            createMessageAlert('发表成功, 2秒后跳转到专栏', 'success', 2000)
+          // 是否是更新
+          const actionName = isEditMode ? 'updatePost' : 'createPost'
+          const sendData = isEditMode ? {id: route.query.id, payload: newPost} : newPost
+          store.dispatch(actionName, sendData).then(() => {
+            createMessageAlert(isEditMode ? '更新成功,2秒后跳转' : '发表成功,2秒后跳转', 'success', 2000)
             setTimeout(() => {
               router.push({name: 'column', params: {id: column}})
             }, 2000)
@@ -147,7 +150,8 @@ export default defineComponent({
       onFormSubmit,
       beforeUpload,
       onFileUploaded,
-      uploadedData
+      uploadedData,
+      isEditMode
     }
   }
 })

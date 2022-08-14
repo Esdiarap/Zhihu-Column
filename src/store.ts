@@ -1,5 +1,5 @@
 import {Commit, createStore} from "vuex";
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import router from "./router";
 
 // Post请求的返回值
@@ -67,6 +67,12 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
     commit(mutationName, data)
     return data
 }
+
+const asyncAndCommit = async (url: string, mutationName: string, commit: Commit, config: AxiosRequestConfig = {method: 'get'}) => {
+    const {data} = await axios(url, config)
+    commit(mutationName, data)
+    return data
+}
 const store = createStore<GlobalDataProps>({
     state: {
         columns: [],
@@ -110,11 +116,17 @@ const store = createStore<GlobalDataProps>({
             state.loading = status
         },
         setError(state, e: GlobalErrorProps) {
-          state.error = e
+            state.error = e
         },
         fetchCurrentUser(state, rawData) {
             state.user = {isLogin: true, ...rawData.data}
         },
+        updatePost(state, {data}) {
+            state.posts = state.posts.map(post => {
+                if (post._id === data._id) return data
+                return post
+            })
+        }
     },
     actions: {
         fetchColumns({commit}) {
@@ -124,7 +136,7 @@ const store = createStore<GlobalDataProps>({
             return getAndCommit(`/columns/${cid}`, 'fetchColumn', commit)
         },
         fetchPosts({commit}, cid) {
-            return  getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
+            return getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
         },
         fetchPost({commit}, pid) {
             return getAndCommit(`/posts/${pid}`, 'fetchPost', commit)
@@ -141,6 +153,9 @@ const store = createStore<GlobalDataProps>({
         },
         createPost({commit}, payload) {
             return postAndCommit('/posts', 'createPost', commit, payload)
+        },
+        updatePost({commit}, {id, payload}) {
+            return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {method: 'patch', data: payload})
         }
     },
     getters: {

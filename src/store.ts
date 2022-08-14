@@ -1,6 +1,7 @@
 import {Commit, createStore} from "vuex";
 import axios, {AxiosRequestConfig} from "axios";
 import router from "./router";
+import {arrToObj, objToArr} from "./apis/helpers";
 
 // Post请求的返回值
 export interface ResponseType<T = object> {
@@ -47,10 +48,14 @@ export interface GlobalErrorProps {
     message?: string
 }
 
+interface ListProps<T> {
+    [id: string]: T
+}
+
 export interface GlobalDataProps {
     error: GlobalErrorProps
-    columns: ColumnProps[]
-    posts: PostProps[]
+    columns: ListProps<ColumnProps>
+    posts: ListProps<PostProps>
     user: UserProps,
     loading: false,
     token: string
@@ -75,8 +80,8 @@ const asyncAndCommit = async (url: string, mutationName: string, commit: Commit,
 }
 const store = createStore<GlobalDataProps>({
     state: {
-        columns: [],
-        posts: [],
+        columns: {},
+        posts: {},
         user: {isLogin: false},
         loading: false,
         token: localStorage.getItem('token') || '',
@@ -98,19 +103,19 @@ const store = createStore<GlobalDataProps>({
             router.push('/')
         },
         createPost(state, newPost) {
-            state.posts.push(newPost)
+            state.posts[newPost._id] = newPost
         },
         fetchColumns(state, rawData) {
-            state.columns = rawData.data.list
+            state.columns = arrToObj(rawData.data.list)
         },
         fetchColumn(state, rawData) {
-            state.columns = [rawData.data]
+            state.columns[rawData.data._id] = rawData.data
         },
         fetchPosts(state, rawData) {
-            state.posts = rawData.data.list
+            state.posts = arrToObj(rawData.data.list)
         },
         fetchPost(state, rawData) {
-            state.posts = [rawData.data] // 此时只有一个Post了，posts数组只有一项，但是也要用数组包裹起来。而且此处获取的Post是有Content的
+            state.posts[rawData.data._id] = rawData.data // 此时只有一个Post了，posts数组只有一项，但是也要用数组包裹起来。而且此处获取的Post是有Content的
         },
         setLoading(state, status) {
             state.loading = status
@@ -122,13 +127,10 @@ const store = createStore<GlobalDataProps>({
             state.user = {isLogin: true, ...rawData.data}
         },
         updatePost(state, {data}) {
-            state.posts = state.posts.map(post => {
-                if (post._id === data._id) return data
-                return post
-            })
+            state.posts[data._id] = data
         },
         deletePost(state, {data}) {
-            state.posts = state.posts.filter(post => post._id !== data._id)
+            delete state.posts[data._id]
         }
     },
     actions: {
@@ -168,9 +170,10 @@ const store = createStore<GlobalDataProps>({
         columnNumber(state) {
             return state.columns.length
         },
-        getColumnById: state => (id: string) => state.columns.find(col => col._id === id),
-        getPostsById: state => (cid: string) => state.posts.filter(post => post.column === cid),
-        getPostById: state => (pid: string) => state.posts.find(post => post._id === pid)
+        getColumnById: state => (id: string) => state.columns[id],
+        getPostsById: state => (cid: string) => objToArr(state.posts).filter(post => post.column === cid),
+        getPostById: state => (pid: string) => state.posts[pid],
+        getColumns: state => objToArr(state.columns)
     }
 })
 

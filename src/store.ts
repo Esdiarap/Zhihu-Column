@@ -54,8 +54,8 @@ interface ListProps<T> {
 
 export interface GlobalDataProps {
     error: GlobalErrorProps
-    columns: { data: ListProps<ColumnProps>, currentPage: number, total: number}
-    posts: { data: ListProps<PostProps>, loadedColumns: string[], total: number}
+    columns: { data: ListProps<ColumnProps>, currentPage: number, total: number }
+    posts: { data: ListProps<PostProps>, loadedColumns: ListProps<{ currentPage: number; total: number }>}
     user: UserProps,
     loading: false,
     token: string
@@ -91,7 +91,7 @@ const asyncAndCommit = async (
 const store = createStore<GlobalDataProps>({
     state: {
         columns: {data: {}, currentPage: 0, total: 0},
-        posts: {data: {}, loadedColumns: [], total: 0},
+        posts: {data: {}, loadedColumns: {}},
         user: {isLogin: false},
         loading: false,
         token: localStorage.getItem('token') || '',
@@ -128,9 +128,10 @@ const store = createStore<GlobalDataProps>({
             state.columns.data[rawData.data._id] = rawData.data
         },
         fetchPosts(state, {data: rawData, extraData: columnId}) {
-            state.posts.data = {...state.posts.data, ...arrToObj(rawData.data.list)} // 把新的posts数据push到里面
-            state.posts.loadedColumns.push(columnId)
-            state.posts.total = rawData.data.count
+            const {list, currentPage, count} = rawData.data
+            const {data} = state.posts
+            state.posts.data = {...data, ...arrToObj(list)} // 把新的posts数据push到里面
+            state.posts.loadedColumns = {...state.posts.loadedColumns, ...{[columnId]: {currentPage, total: count} }}
         },
         fetchPost(state, rawData) {
             state.posts.data[rawData.data._id] = rawData.data // 此时只有一个Post了，posts数组只有一项，但是也要用数组包裹起来。而且此处获取的Post是有Content的
@@ -165,10 +166,11 @@ const store = createStore<GlobalDataProps>({
         },
         fetchPosts({state, commit}, payload) {
             const {currentPage = 1, pageSize = 6, cid} = payload
-            // if (!state.posts.loadedColumns.includes(cid)) {
-            //     return asyncAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit, {method: 'get'}, cid) // 把columnId带上
-            // }
-            return asyncAndCommit(`/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchPosts', commit, {method: 'get'}, cid) // 把columnId带上
+            if (!state.posts.loadedColumns[cid]) {
+                return asyncAndCommit(`/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchPosts', commit, {method: 'get'}, cid) // 把columnId带上
+            }else if (state.posts.loadedColumns[cid]?.currentPage < currentPage) {
+                return asyncAndCommit(`/columns/${cid}/posts?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchPosts', commit, {method: 'get'}, cid) // 把columnId带上
+            }
         },
         fetchPost({state, commit}, pid) {
             const currentPost = state.posts.data[pid]
@@ -194,7 +196,10 @@ const store = createStore<GlobalDataProps>({
             return postAndCommit('/posts', 'createPost', commit, payload)
         },
         updatePost({commit}, {id, payload}) {
-            return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {method: 'patch', data: payload})
+            return asyncAndCommit(`/posts/${id}`, 'updatePost', commit, {
+                method: 'patch',
+                data: payload
+            })
         },
         deletePost({commit}, id) {
             return asyncAndCommit(`/posts/${id}`, 'deletePost', commit, {method: 'delete'})

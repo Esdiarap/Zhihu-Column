@@ -44,10 +44,11 @@ export default defineComponent({
 
     ///////////////////////////////
     // 加载更多
-    const total = computed(() => store.state.posts.total)
+    const total = computed(() => store.state.posts.loadedColumns[currentId as string]?.total)
+    const currentPage = computed(() => store.state.posts.loadedColumns[currentId as string]?.currentPage)
     const {loadMorePage, isLastPage} = useLoadMore('fetchPosts', total, {
       pageSize: 3,
-      currentPage: 2,
+      currentPage: currentPage.value ? currentPage.value + 1 : 2,
       columnId: currentId
     })
     return {

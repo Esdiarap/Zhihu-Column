@@ -4,7 +4,7 @@
       <router-link to="/" class="navbar-brand">专栏</router-link>
       <ul v-if="!user.isLogin" class="list-inline mb-0">
         <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">登录</router-link></li>
-        <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">注册</router-link></li>
+        <li class="list-inline-item"><router-link to="/signup" class="btn btn-outline-light my-2">注册</router-link></li>
       </ul>
       <ul v-else class="list-inline mb-0">
         <!--<li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">你好 {{user.name}}</a></li>-->

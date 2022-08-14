@@ -57,6 +57,20 @@ onUnmounted(() => {
   easyMDEInstance = null
 })
 
+// 1. 暴露相应的方法
+// 方法: Clear 清空
+const clear = () => {
+  if (easyMDEInstance) easyMDEInstance.value('') // 重新赋值
+}
+// 方法: getMDEInstance 获取MDE实例
+const getMDEInstance = () => easyMDEInstance
+// 使用defineExpose编译器宏导出组件的内容
+defineExpose({
+  clear,
+  getMDEInstance
+})
+
+// 2. 结合页面实现验证功能
 </script>
 
 <style scoped>

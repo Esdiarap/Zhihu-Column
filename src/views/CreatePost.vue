@@ -36,7 +36,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label">文章详情：</label>
-        <MarkdownEditor v-model="contentVal"></MarkdownEditor>
+        <MarkdownEditor v-model="contentVal" ref="MDERef"></MarkdownEditor>
         <!--<validate-input-->
         <!--    rows="10"-->
         <!--    type="text"-->
@@ -64,7 +64,13 @@ import UploadFileInput from "../components/UploadFileInput.vue";
 import createMessageAlert from "../apis/createMessageAlert";
 import uploadCheck from "../apis/uploadCheck";
 import MarkdownEditor from '../components/MarkdownEditor.vue'
+import EasyMDE from "easymde";
 
+// 自己制作的EasyMDE组件暴露出来的方法
+interface MarkdownExpose {
+  clear: () => void
+  getMDEInstance: () => EasyMDE
+}
 
 export default defineComponent({
   name: 'CreatePost',
@@ -145,6 +151,16 @@ export default defineComponent({
         })
       }
     })
+
+    ///////////////////////////////
+    // EasyMDE的实例
+    const MDERef = ref<null | MarkdownExpose>(null)
+    onMounted(() => {
+      if (MDERef.value) {
+        console.log(MDERef.value)
+        console.log(MDERef.value.getMDEInstance())
+      }
+    })
     return {
       titleRules,
       titleVal,
@@ -154,7 +170,8 @@ export default defineComponent({
       beforeUpload,
       onFileUploaded,
       uploadedData,
-      isEditMode
+      isEditMode,
+      MDERef
     }
   }
 })

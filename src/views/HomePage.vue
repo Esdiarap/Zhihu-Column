@@ -45,7 +45,11 @@ export default defineComponent({
     ///////////////////////////////////////////
     // 加载更多
     const total = computed(() => store.state.columns.total)
-    const {loadMorePage, isLastPage} = useLoadMore('fetchColumns', total, {pageSize: 3, currentPage: 2})
+    const currentPage = computed(() => store.state.columns.currentPage)
+    const {loadMorePage, isLastPage} = useLoadMore('fetchColumns', total, {
+      pageSize: 3,
+      currentPage: currentPage.value ? currentPage.value + 1 : 2 // 如果store中的currentPage是0，则点击加载第二页。如果有值，则加载下一页
+    })
     return {
       list,
       loadMorePage,

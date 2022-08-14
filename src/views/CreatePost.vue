@@ -34,9 +34,15 @@
             type="text"
         />
       </div>
-      <div class="mb-3">
+      <div class="mb-3 markdown-editor-container">
         <label class="form-label">文章详情：</label>
-        <MarkdownEditor v-model="contentVal" ref="MDERef"></MarkdownEditor>
+        <MarkdownEditor
+            v-model="contentVal"
+            ref="MDERef"
+            @blur="checkEditor"
+            :class="{'is-invalid': !editorStatus.isValid}"
+        ></MarkdownEditor>
+        <span v-if="!editorStatus.isValid" class="invalid-feedback mt-1">{{editorStatus.message}}</span>
         <!--<validate-input-->
         <!--    rows="10"-->
         <!--    type="text"-->
@@ -54,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue'
+import {defineComponent, onMounted, reactive, ref} from 'vue'
 import {useStore} from 'vuex'
 import {useRoute, useRouter} from 'vue-router'
 import ValidateInput, {RuleProps} from '../components/ValidateInput.vue'
@@ -90,14 +96,12 @@ export default defineComponent({
       {type: 'required', message: '文章标题不能为空'}
     ]
     const contentVal = ref('')
-    const contentRules: RuleProps = [
-      {type: 'required', message: '文章详情不能为空'}
-    ]
     let imageID: string
 
     // 验证
     const onFormSubmit = (result: boolean) => {
-      if (result) {
+      checkEditor()
+      if (result && editorStatus.isValid) {
         const {column, _id} = store.state.user
         if (column) {
           const newPost: PostProps = {
@@ -157,21 +161,36 @@ export default defineComponent({
     const MDERef = ref<null | MarkdownExpose>(null)
     onMounted(() => {
       if (MDERef.value) {
-        console.log(MDERef.value)
-        console.log(MDERef.value.getMDEInstance())
+        // console.log(MDERef.value)
+        // console.log(MDERef.value.getMDEInstance())
       }
     })
+    // 检验Editor
+    const editorStatus = reactive({
+      isValid: true,
+      message: ''
+    })
+    const checkEditor = () => {
+      if (contentVal.value.trim() === '') {
+        editorStatus.isValid = false
+        editorStatus.message = '文章内容不能为空'
+      }else {
+        editorStatus.isValid = true
+        editorStatus.message = ''
+      }
+    }
     return {
       titleRules,
       titleVal,
       contentVal,
-      contentRules,
       onFormSubmit,
       beforeUpload,
       onFileUploaded,
       uploadedData,
       isEditMode,
-      MDERef
+      MDERef,
+      editorStatus,
+      checkEditor
     }
   }
 })
@@ -192,5 +211,11 @@ export default defineComponent({
 .spinner-container {
   display: flex;
   gap: 2rem;
+}
+
+.markdown-editor-container {
+  .is-invalid {
+    outline: 1px solid red;
+  }
 }
 </style>

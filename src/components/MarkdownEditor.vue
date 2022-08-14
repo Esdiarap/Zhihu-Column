@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import EasyMDE, {Options} from "easymde";
-import {onMounted, onUnmounted, ref} from "vue";
+import {onMounted, onUnmounted, ref, watch} from "vue";
 
 // 类型 属性以及事件
 interface EditorProps {
@@ -71,6 +71,13 @@ defineExpose({
 })
 
 // 2. 结合页面实现验证功能
+
+// 编辑功能异步传入数据进行更新
+watch(() => props.modelValue, newValue => {
+  if (easyMDEInstance) {
+    if (newValue !== innerValue.value) easyMDEInstance.value(newValue || '')
+  }
+})
 </script>
 
 <style scoped>

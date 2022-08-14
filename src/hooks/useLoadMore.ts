@@ -3,7 +3,8 @@ import {useStore} from "vuex";
 
 interface LoadParams {
     currentPage: number
-    pageSize: number
+    pageSize: number,
+    columnId?: string | string[]
 }
 
 /**
@@ -19,9 +20,10 @@ const useLoadMore = (actionName: string, total: ComputedRef<number>, params: Loa
     const store = useStore()
     const currentPage = ref(params.currentPage)
     const requestParams = computed(() => ({ // 返回一个根据currentPage的计算属性，这样当currentPage增加的时候这个params也会变化
-            currentPage: currentPage.value,
-            pageSize: params.pageSize
-        }))
+        currentPage: currentPage.value,
+        pageSize: params.pageSize,
+        cid: params.columnId
+    }))
     const loadMorePage = async () => {
         await store.dispatch(actionName, requestParams.value).catch(e => console.error(e))
         currentPage.value++ // 下一页

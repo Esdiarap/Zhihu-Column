@@ -10,6 +10,13 @@
       </div>
     </div>
     <PostList :list="list"></PostList>
+    <button
+        class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25"
+        @click="loadMorePage"
+        v-if="!isLastPage"
+    >
+      加载更多
+    </button>
   </div>
 </template>
 
@@ -19,6 +26,7 @@ import {useRoute} from "vue-router";
 import PostList from "../components/PostList.vue";
 import {useStore} from "vuex";
 import {GlobalDataProps} from "../store";
+import useLoadMore from "../hooks/useLoadMore";
 
 export default defineComponent({
   name: "ColumnDetail",
@@ -29,13 +37,24 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>()
     onMounted(() => {
       store.dispatch('fetchColumn', currentId)
-      store.dispatch('fetchPosts', currentId)
+      store.dispatch('fetchPosts', {currentPage: 1, pageSize: 3, cid: currentId})
     })
     const column = computed(() => store.getters.getColumnById(currentId))
     const list = computed(() => store.getters.getPostsById(currentId))
+
+    ///////////////////////////////
+    // 加载更多
+    const total = computed(() => store.state.posts.total)
+    const {loadMorePage, isLastPage} = useLoadMore('fetchPosts', total, {
+      pageSize: 3,
+      currentPage: 2,
+      columnId: currentId
+    })
     return {
       column,
-      list
+      list,
+      loadMorePage,
+      isLastPage
     }
   }
 })

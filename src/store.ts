@@ -54,7 +54,7 @@ interface ListProps<T> {
 
 export interface GlobalDataProps {
     error: GlobalErrorProps
-    columns: { data: ListProps<ColumnProps>, isLoaded: boolean }
+    columns: { data: ListProps<ColumnProps>, isLoaded: boolean , total: number}
     posts: { data: ListProps<PostProps>, loadedColumns: string[] }
     user: UserProps,
     loading: false,
@@ -90,7 +90,7 @@ const asyncAndCommit = async (
 }
 const store = createStore<GlobalDataProps>({
     state: {
-        columns: {data: {}, isLoaded: false},
+        columns: {data: {}, isLoaded: false, total: 0},
         posts: {data: {}, loadedColumns: []},
         user: {isLogin: false},
         loading: false,
@@ -116,8 +116,13 @@ const store = createStore<GlobalDataProps>({
             state.posts.data[newPost._id] = newPost
         },
         fetchColumns(state, rawData) {
-            state.columns.data = arrToObj(rawData.data.list)
-            state.columns.isLoaded = true
+            const {data} = state.columns
+            const {list, count} = rawData.data
+            state.columns = {
+                data: {...data, ...arrToObj(list)}, // 把加载的Columns都推进去
+                isLoaded: true,
+                total: count
+            }
         },
         fetchColumn(state, rawData) {
             state.columns.data[rawData.data._id] = rawData.data
@@ -146,10 +151,12 @@ const store = createStore<GlobalDataProps>({
         }
     },
     actions: {
-        fetchColumns({state, commit}) {
-            if (!state.columns.isLoaded) { // 如果专栏没有被加载
-                return getAndCommit('/columns', 'fetchColumns', commit)
-            }
+        fetchColumns({state, commit}, payload = {}) {
+            const {currentPage = 1, pageSize = 6} = payload
+            // if (!state.columns.isLoaded) { // 如果专栏没有被加载
+            //     return asyncAndCommit('/columns', 'fetchColumns', commit, {method: 'get'})
+            // }
+            return asyncAndCommit(`/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit, {method: 'get'})
         },
         fetchColumn({state, commit}, cid) {
             if (!state.columns.data[cid]) {

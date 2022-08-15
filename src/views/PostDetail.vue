@@ -1,16 +1,16 @@
 <template>
   <div class="post-detail-container">
-    <img :src="post.image?.url" alt="image" v-if="post?.image" class="post-detail-img">
-    <h2>{{post?.title}}</h2>
+    <img :src="currentImageURL" alt="image" v-if="post.image" class="post-detail-img">
+    <h2>{{post.title}}</h2>
     <div class="post-detail-nav">
       <div class="post-detail-author">
-        <img :src="post?.author?.avatar?.url" alt="authorAvatar" v-if="post?.author?.avatar">
+        <img :src="currentAvatarURL" alt="authorAvatar" v-if="currentAvatarURL">
         <div class="author">
-          <p class="nickname">作者昵称: {{post?.author.nickname}}</p>
-          <p class="description">描述是: {{post?.author.description}}</p>
+          <p class="nickname">作者昵称: {{currentNickName}}</p>
+          <p class="description">描述是: {{currentDescription}}</p>
         </div>
       </div>
-      <span class="create-time">{{post?.createdAt}}</span>
+      <span class="create-time">{{post.createdAt}}</span>
     </div>
     <div class="content" v-if="currentHTML" v-html="currentHTML"></div>
     <div class="bottom-button" v-if="showEditArea">
@@ -31,7 +31,7 @@
 import {computed, defineComponent, onMounted, ref} from "vue"
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
-import {PostProps, ResponseType, UserProps} from "../store";
+import {ImageProps, PostProps, ResponseType, UserProps} from "../store";
 import MarkdownIt from 'markdown-it'
 import ModalAlert from "../components/ModalAlert.vue";
 import createMessageAlert from "../apis/createMessageAlert";
@@ -55,6 +55,35 @@ export default defineComponent({
     })
 
     const post = computed<PostProps>(() => store.getters.getPostById(postId))
+    const currentImageURL = computed(() => {
+      if (post.value && post.value.image) {
+        const {image} = post.value
+        return (image as ImageProps).url
+      }
+      return ''
+    })
+    const currentAvatarURL = computed(() => {
+      if (post.value && post.value.author) {
+        const {author} = post.value
+        // return author as UserProps['avatar'] as ImageProps['url']
+        return (author as UserProps).avatar?.url
+      }
+      return ''
+    })
+    const currentNickName = computed(() => {
+      if (post.value && post.value.author) {
+        const {author} = post.value
+        return (author as UserProps).nickName
+      }
+      return ''
+    })
+    const currentDescription = computed(() => {
+      if (post.value && post.value.author) {
+        const {author} = post.value
+        return (author as UserProps).description
+      }
+      return ''
+    })
     onMounted(() => {
       store.dispatch('fetchPost', postId)
     })
@@ -86,7 +115,11 @@ export default defineComponent({
       showEditArea,
       isModalVisible,
       onClose,
-      onConfirm
+      onConfirm,
+      currentImageURL,
+      currentAvatarURL,
+      currentNickName,
+      currentDescription
     }
   }
 })

@@ -4,10 +4,10 @@
       <div class="card-body">
         <h4 @click.prevent="routeToPostDetail(post._id)" class="link-primary link">{{ post.title }}</h4>
         <div class="row my-3 align-items-center">
-          <div v-if="post.image?.url" class="col-3">
-            <img :src="post.image?.url" :alt="post.title" class="rounded-lg w-100">
+          <div v-if="post.image" class="col-3">
+            <img :src="post.image instanceof Object ? post.image.url : ''" :alt="post.title" class="rounded-lg w-100">
           </div>
-          <p :class="{'col-9': post.image?.url}">{{ post.excerpt }}</p>
+          <p :class="{'col-9': post.image}">{{ post.excerpt }}</p>
         </div>
         <span class="text-muted">{{ post.createdAt }}</span>
       </div>
@@ -18,7 +18,6 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import {PostProps} from '../store'
-import axios from "axios";
 import router from "../router";
 
 export default defineComponent({
@@ -29,12 +28,10 @@ export default defineComponent({
     }
   },
   setup() {
-    const routeToPostDetail = (_id: string) => {
-      // console.log(_id)
-      // axios.get(`posts/${_id}`).then(res => {
-      //   console.log(res.data)
-      // })
-      router.push(`/posts/${_id}`)
+    const routeToPostDetail = (_id: string | undefined) => {
+      if (_id){
+        router.push(`/posts/${_id}`)
+      }
     }
     return {
       routeToPostDetail

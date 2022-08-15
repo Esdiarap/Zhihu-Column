@@ -4,7 +4,7 @@ import router from "./router";
 import store from "./store";
 const app = createApp(App)
 import axios from "axios";
-axios.defaults.baseURL = 'http://apis.imooc.com/api/'
+axios.defaults.baseURL = 'https://apis.imooc.com/api/'
 
 // 请求拦截器
 axios.interceptors.request.use(config => {
